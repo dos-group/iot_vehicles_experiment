@@ -33,10 +33,11 @@ public enum Generator { GET;
         // loop through dataset based on synchronization with stopwatch
         int current = (int) Generator.GET.stopWatch.getTime(TimeUnit.SECONDS);
         System.out.println(ts.observations.size());
+
         for (int i = 0; i < ts.observations.size(); i++) {
+
             // test if new vehicles need to be created
-            //int vehiclesNeeded = ts.observations.get(i).value - VehicleActor.VEHICLE_COUNT.get();
-            int vehiclesNeeded = 100000 - VehicleActor.VEHICLE_COUNT.get();
+            int vehiclesNeeded = ts.observations.get(i).value - VehicleActor.VEHICLE_COUNT.get();
             if (vehiclesNeeded > 0) {
                 // create the desired number of vehicles
                 IntStream.range(0, vehiclesNeeded).forEach(j -> {

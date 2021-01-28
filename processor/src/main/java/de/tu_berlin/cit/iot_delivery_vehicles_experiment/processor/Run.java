@@ -205,7 +205,7 @@ public class Run {
 
         kafkaConsumerProps.setProperty("bootstrap.servers", props.getProperty("kafka.brokers")); // Broker default host:port
         kafkaConsumerProps.setProperty("group.id", props.getProperty("kafka.consumer.group"));   // Consumer group ID
-        kafkaConsumerProps.setProperty("auto.offset.reset", "latest");                           // Always read topic from start
+        kafkaConsumerProps.setProperty("auto.offset.reset", "earliest");                           // Always read topic from start
 
         FlinkKafkaConsumer<TrafficEvent> myConsumer =
             new FlinkKafkaConsumer<>(
