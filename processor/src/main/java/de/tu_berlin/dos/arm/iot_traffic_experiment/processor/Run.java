@@ -123,11 +123,9 @@ public class Run {
     // Retrieve vehicle type from database and parse json, builder is parsed to stop serialization error
     public static class VehicleEnricher extends RichMapFunction<Tuple5<Long, String, Double, Double, Integer>, String> {
 
-        //private ClusterBuilder builder;
 
-        public VehicleEnricher(ClusterBuilder builder) {
+        public VehicleEnricher() {
 
-            //this.builder = builder;
         }
 
         @Override
@@ -153,21 +151,7 @@ public class Run {
         Properties props = FileReader.GET.read("processor.properties", Properties.class);
         int updateInterval = Integer.parseInt(props.getProperty("traffic.updateInterval"));
         int speedLimit = Integer.parseInt(props.getProperty("traffic.speedLimit"));
-        String hosts = props.getProperty("cassandra.host");
-        int port = Integer.parseInt(props.getProperty("cassandra.port"));
         int windowSize = Integer.parseInt(props.getProperty("traffic.windowSize"));
-
-        // setup cassandra cluster builder
-        ClusterBuilder builder = new ClusterBuilder() {
-
-            @Override
-            protected Cluster buildCluster(Builder builder) {
-            return builder
-                .addContactPoints(hosts.split(","))
-                .withPort(port)
-                .build();
-            }
-        };
 
         // setup Kafka consumer
         Properties kafkaConsumerProps = new Properties();
@@ -263,7 +247,7 @@ public class Run {
                 .name("Window")
                 .filter(new SpeedingFilter(speedLimit))
                 .name("SpeedFilter")
-                .map(new VehicleEnricher(builder))
+                .map(new VehicleEnricher())
                 .name("VehicleEnricher");//.startNewChain();
 
         // write notifications to kafka
