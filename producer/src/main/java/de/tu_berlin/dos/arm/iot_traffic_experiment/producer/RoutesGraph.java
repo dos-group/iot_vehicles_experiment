@@ -1,7 +1,7 @@
-package de.tu_berlin.cit.iot_delivery_vehicles_experiment.producer;
+package de.tu_berlin.dos.arm.iot_traffic_experiment.producer;
 
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.iot_delivery_vehicles.Point;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.utils.FileReader;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.Point;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.utils.FileReader;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;

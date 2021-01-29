@@ -1,11 +1,11 @@
-package de.tu_berlin.cit.iot_delivery_vehicles_experiment.producer;
+package de.tu_berlin.dos.arm.iot_traffic_experiment.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.data.TimeSeries;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.iot_delivery_vehicles.TrafficEvent;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.utils.FileParser;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.utils.FileReader;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.data.TimeSeries;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.utils.FileParser;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.utils.FileReader;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.log4j.Logger;

@@ -1,4 +1,4 @@
-package de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.data;
+package de.tu_berlin.dos.arm.iot_traffic_experiment.common.data;
 
 import java.util.Collections;
 import java.util.LinkedList;

@@ -1,6 +1,6 @@
-package de.tu_berlin.cit.iot_delivery_vehicles_experiment.processor;
+package de.tu_berlin.dos.arm.iot_traffic_experiment.processor;
 
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.iot_delivery_vehicles.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
@@ -12,6 +12,6 @@ public class TrafficEventTSExtractor extends BoundedOutOfOrdernessTimestampExtra
 
     @Override
     public long extractTimestamp(TrafficEvent trafficEvent) {
-        return trafficEvent.getTimestamp().toInstant().toEpochMilli();
+        return trafficEvent.getTs().toInstant().toEpochMilli();
     }
 }

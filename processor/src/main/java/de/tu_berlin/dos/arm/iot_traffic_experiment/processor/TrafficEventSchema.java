@@ -1,8 +1,8 @@
-package de.tu_berlin.cit.iot_delivery_vehicles_experiment.processor;
+package de.tu_berlin.dos.arm.iot_traffic_experiment.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.iot_delivery_vehicles.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -22,7 +22,7 @@ public class TrafficEventSchema implements DeserializationSchema<TrafficEvent>, 
     private static TrafficEvent fromString(String line) {
         String[] tokens = line.split(",");
         // 4 commas for TrafficEvent + 1 for Point
-        if (tokens.length != 5) {
+        if (tokens.length != 4) {
             throw new RuntimeException("Invalid record: " + line);
         }
         try {

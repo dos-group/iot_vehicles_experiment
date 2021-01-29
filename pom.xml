@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.tu_berlin.dos.arm</groupId>
-    <artifactId>iot_delivery_vehicles_experiment</artifactId>
+    <artifactId>iot_traffic_experiment</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>

@@ -1,16 +1,15 @@
-package de.tu_berlin.cit.iot_delivery_vehicles_experiment.processor;
+package de.tu_berlin.dos.arm.iot_traffic_experiment.processor;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Builder;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.iot_delivery_vehicles.Point;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.iot_delivery_vehicles.TrafficEvent;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.iot_delivery_vehicles.TrafficEvent.VehicleType;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.utils.FileReader;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.Point;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.utils.FileReader;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicData;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.java.tuple.Tuple6;
+import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
@@ -44,7 +43,6 @@ public class Run {
 
         public final Point point;
         public final int radius;
-        public VehicleType type;
 
         public POIFilter(Point point, int radius) {
 
@@ -57,17 +55,17 @@ public class Run {
 
             // Use Geodesic Inverse function to find distance in meters
             GeodesicData g1 = Geodesic.WGS84.Inverse(
-                point.latitude,
-                point.longitude,
-                event.getPoint().latitude,
-                event.getPoint().longitude);
+                point.lt,
+                point.lg,
+                event.getPt().lt,
+                event.getPt().lg);
             // determine if it is in the radius of the POE or not
             return g1.s12 <= radius;
         }
     }
 
     // Window to aggregate traffic events and calculate average speed in km/h
-    public static class AvgSpeedWindow extends ProcessWindowFunction<TrafficEvent, Tuple6<Long, String, String, Double, Double, Integer>, String, TimeWindow> {
+    public static class AvgSpeedWindow extends ProcessWindowFunction<TrafficEvent, Tuple5<Long, String, Double, Double, Integer>, String, TimeWindow> {
 
         public final int updateInterval;
 
@@ -79,36 +77,34 @@ public class Run {
         @Override
         public void process(
                 String vehicleId, Context context, Iterable<TrafficEvent> events,
-                Collector<Tuple6<Long, String, String, Double, Double, Integer>> out) {
+                Collector<Tuple5<Long, String, Double, Double, Integer>> out) {
 
-            String vehicleTypeId = "0";
             Point previous = null;
             double distance = 0;
             int count = 0;
             for (TrafficEvent event : events) {
                 if (previous != null) {
                     GeodesicData g1 = Geodesic.WGS84.Inverse(
-                        previous.latitude,
-                        previous.longitude,
-                        event.getPoint().latitude,
-                        event.getPoint().longitude);
+                        previous.lt,
+                        previous.lg,
+                        event.getPt().lt,
+                        event.getPt().lg);
                     distance += g1.s12;
                     count++;
                 }
-                previous = event.getPoint();
-                vehicleTypeId = event.getVehicleSegment();
+                previous = event.getPt();
             }
             // calculate time in hours
             double time = (count * updateInterval) / 3600000d;
             int avgSpeed = 0;
             if (time != 0) avgSpeed = (int) ((distance/1000) / time);
             assert previous != null;
-            out.collect(new Tuple6<>(context.window().getEnd(), vehicleId, vehicleTypeId, previous.latitude, previous.longitude, avgSpeed));
+            out.collect(new Tuple5<>(context.window().getEnd(), vehicleId, previous.lt, previous.lg, avgSpeed));
         }
     }
 
     // filter to determine if traffic vehicle is traveling over the speed limit
-    public static class SpeedingFilter implements FilterFunction<Tuple6<Long, String, String, Double, Double, Integer>> {
+    public static class SpeedingFilter implements FilterFunction<Tuple5<Long, String, Double, Double, Integer>> {
 
         public final int speedLimit;
 
@@ -118,48 +114,30 @@ public class Run {
         }
 
         @Override
-        public boolean filter(Tuple6<Long, String, String, Double, Double, Integer> trafficVehicle) throws Exception {
+        public boolean filter(Tuple5<Long, String, Double, Double, Integer> trafficVehicle) throws Exception {
 
-            return trafficVehicle.f5 >= speedLimit;
+            return trafficVehicle.f4 >= speedLimit;
         }
     }
 
     // Retrieve vehicle type from database and parse json, builder is parsed to stop serialization error
-    public static class VehicleTypeMapper extends RichMapFunction<Tuple6<Long, String, String, Double, Double, Integer>, String> {
+    public static class VehicleEnricher extends RichMapFunction<Tuple5<Long, String, Double, Double, Integer>, String> {
 
         //private ClusterBuilder builder;
 
-        public VehicleTypeMapper(ClusterBuilder builder) {
+        public VehicleEnricher(ClusterBuilder builder) {
 
             //this.builder = builder;
         }
 
         @Override
-        public String map(Tuple6<Long, String, String, Double, Double, Integer> notification) throws Exception {
-
-            String description = "unknown";
-            //if (VehicleSegmentCache.containsKey(notification.f2)) {
-
-                //description = VehicleSegmentCache.get(notification.f2);
-            //}
-            //else {
-
-                //String query = "SELECT description FROM TrafficKeySpace.Vehicle_Segments where id='" + notification.f2 + "';";
-                //ResultSet result = Cassandra.execute(query, builder);
-                //Iterator<Row> rows = result.iterator();
-                //while (rows.hasNext()) {
-
-                    //description = rows.next().getString("description");
-                    //VehicleSegmentCache.put(notification.f2, description);
-                //}
-            //}
+        public String map(Tuple5<Long, String, Double, Double, Integer> notification) throws Exception {
 
             return "{ timestamp: " + notification.f0 +
-                    ", vehicleId: '" + notification.f1 + "'" +
-                    ", description: '" + description + "'" +
-                    ", latitude: " + notification.f3 +
-                    ", longitude: " + notification.f4 +
-                    ", avgSpeed: " + notification.f5 + "}";
+                    ", licensePlate: '" + notification.f1 + "'" +
+                    ", latitude: " + notification.f2 +
+                    ", longitude: " + notification.f3 +
+                    ", avgSpeed: " + notification.f4 + "}";
         }
     }
 
@@ -190,15 +168,6 @@ public class Run {
                 .build();
             }
         };
-
-        // setup cassandra keyspace and tables if they dont exist
-        /*Cassandra.execute("CREATE KEYSPACE IF NOT EXISTS TrafficKeySpace WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};", builder);
-        Cassandra.execute("DROP TABLE IF EXISTS TrafficKeySpace.Vehicle_Segments;", builder);
-        Cassandra.execute("CREATE TABLE IF NOT EXISTS TrafficKeySpace.Vehicle_Segments(id text, description text, PRIMARY KEY (id));", builder);
-        for (VehicleSegment segment : VehicleSegment.values()) {
-
-            Cassandra.execute("INSERT INTO TrafficKeySpace.Vehicle_Segments(id, description) VALUES('" + segment + "', '" + segment.description + "');", builder);
-        }*/
 
         // setup Kafka consumer
         Properties kafkaConsumerProps = new Properties();
@@ -236,14 +205,6 @@ public class Run {
 
         // Disable Operator chaining for fine grain monitoring
         env.disableOperatorChaining();
-
-        // setting global properties from file
-        /*Map<String, String> propsMap = new HashMap<>();
-        for (final String name: props.stringPropertyNames()) {
-            propsMap.put(name, props.getProperty(name));
-        }
-        env.getConfig().setGlobalJobParameters(ParameterTool.fromMap(propsMap));
-        LOG.info(env.getConfig());*/
 
         // configuring RocksDB state backend to use HDFS
         String backupFolder = props.getProperty("hdfs.backupFolder");
@@ -296,14 +257,14 @@ public class Run {
             trafficEventStream
                 .filter(new POIFilter(point, 1000))
                 .name("POIFilter")
-                .keyBy(TrafficEvent::getVehicleId)
+                .keyBy(TrafficEvent::getLp)
                 .timeWindow(Time.milliseconds(windowSize))
                 .process(new AvgSpeedWindow(updateInterval))
                 .name("Window")
                 .filter(new SpeedingFilter(speedLimit))
                 .name("SpeedFilter")
-                .map(new VehicleTypeMapper(builder))
-                .name("TypeMap");//.startNewChain();
+                .map(new VehicleEnricher(builder))
+                .name("VehicleEnricher");//.startNewChain();
 
         // write notifications to kafka
         myProducer.setWriteTimestampToKafka(true);

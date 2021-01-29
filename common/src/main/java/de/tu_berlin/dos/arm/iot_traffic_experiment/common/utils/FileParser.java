@@ -1,7 +1,7 @@
-package de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.utils;
+package de.tu_berlin.dos.arm.iot_traffic_experiment.common.utils;
 
 import org.apache.log4j.Logger;
-import de.tu_berlin.cit.iot_delivery_vehicles_experiment.common.data.Observation;
+import de.tu_berlin.dos.arm.iot_traffic_experiment.common.data.Observation;
 
 import java.io.BufferedReader;
 import java.io.File;
