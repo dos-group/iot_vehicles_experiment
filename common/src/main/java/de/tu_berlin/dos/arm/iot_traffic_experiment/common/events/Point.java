@@ -5,29 +5,29 @@ import java.util.Objects;
 
 public class Point implements Serializable {
 
-    public double lt;
-    public double lg;
+    public float lt;
+    public float lg;
 
     public Point() { }
 
-    public Point(double lt, double lg) {
+    public Point(float lt, float lg) {
         this.lt = lt;
         this.lg = lg;
     }
 
-    public double getLt() {
+    public float getLt() {
         return lt;
     }
 
-    public void setLt(double lt) {
+    public void setLt(float lt) {
         this.lt = lt;
     }
 
-    public double getLg() {
+    public float getLg() {
         return lg;
     }
 
-    public void setLg(double lg) {
+    public void setLg(float lg) {
         this.lg = lg;
     }
 

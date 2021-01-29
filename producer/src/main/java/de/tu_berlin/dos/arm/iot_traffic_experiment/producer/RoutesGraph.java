@@ -28,8 +28,8 @@ enum RoutesGraph { GET;
 
         VertexProvider<Point> vp = (id, attributes) -> {
             return new Point(
-                Double.parseDouble(attributes.get("latitude").getValue()),
-                Double.parseDouble(attributes.get("longitude").getValue()));
+                Float.parseFloat(attributes.get("latitude").getValue()),
+                Float.parseFloat(attributes.get("longitude").getValue()));
         };
 
         EdgeProvider<Point, DefaultEdge> ep = (from, to, label, attributes) -> {

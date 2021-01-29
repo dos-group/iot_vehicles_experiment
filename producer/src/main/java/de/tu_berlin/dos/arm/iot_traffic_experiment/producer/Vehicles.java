@@ -97,7 +97,7 @@ class Vehicles {
                     // Use Geodesic Direct function to determine current lat and long coordinates
                     GeodesicData g2 = Geodesic.WGS84.Direct(g1.lat1, g1.lon1, g1.azi1, currDistance);
                     // create vehicle event and add to vehicle event list
-                    trafficEvents.add(new TrafficEvent(vehicleId, new Point(g2.lat2, g2.lon2), timestamp));
+                    trafficEvents.add(new TrafficEvent(vehicleId, new Point((float) g2.lat2, (float) g2.lon2), timestamp));
                     // increment timestamp by time interval for next event
                     timestamp = Date.from(timestamp.toInstant().plusMillis(this.updateInterval));
                     // calculate new distance based on average speed (in meters per second) and update interval (in milliseconds)

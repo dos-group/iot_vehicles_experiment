@@ -65,7 +65,7 @@ public class Run {
     }
 
     // Window to aggregate traffic events and calculate average speed in km/h
-    public static class AvgSpeedWindow extends ProcessWindowFunction<TrafficEvent, Tuple5<Long, String, Double, Double, Integer>, String, TimeWindow> {
+    public static class AvgSpeedWindow extends ProcessWindowFunction<TrafficEvent, Tuple5<Long, String, Float, Float, Integer>, String, TimeWindow> {
 
         public final int updateInterval;
 
@@ -77,7 +77,7 @@ public class Run {
         @Override
         public void process(
                 String vehicleId, Context context, Iterable<TrafficEvent> events,
-                Collector<Tuple5<Long, String, Double, Double, Integer>> out) {
+                Collector<Tuple5<Long, String, Float, Float, Integer>> out) {
 
             Point previous = null;
             double distance = 0;
@@ -104,7 +104,7 @@ public class Run {
     }
 
     // filter to determine if traffic vehicle is traveling over the speed limit
-    public static class SpeedingFilter implements FilterFunction<Tuple5<Long, String, Double, Double, Integer>> {
+    public static class SpeedingFilter implements FilterFunction<Tuple5<Long, String, Float, Float, Integer>> {
 
         public final int speedLimit;
 
@@ -114,14 +114,14 @@ public class Run {
         }
 
         @Override
-        public boolean filter(Tuple5<Long, String, Double, Double, Integer> trafficVehicle) throws Exception {
+        public boolean filter(Tuple5<Long, String, Float, Float, Integer> trafficVehicle) throws Exception {
 
             return trafficVehicle.f4 >= speedLimit;
         }
     }
 
     // Retrieve vehicle type from database and parse json, builder is parsed to stop serialization error
-    public static class VehicleEnricher extends RichMapFunction<Tuple5<Long, String, Double, Double, Integer>, String> {
+    public static class VehicleEnricher extends RichMapFunction<Tuple5<Long, String, Float, Float, Integer>, String> {
 
 
         public VehicleEnricher() {
@@ -129,7 +129,7 @@ public class Run {
         }
 
         @Override
-        public String map(Tuple5<Long, String, Double, Double, Integer> notification) throws Exception {
+        public String map(Tuple5<Long, String, Float, Float, Integer> notification) throws Exception {
 
             return "{ timestamp: " + notification.f0 +
                     ", licensePlate: '" + notification.f1 + "'" +
@@ -235,7 +235,7 @@ public class Run {
                 .setParallelism(Integer.parseInt(props.getProperty("kafka.partitions")));
 
         // Point of interest
-        Point point = new Point(52.51623249582298, 13.385324913035554); // centroid
+        Point point = new Point(52.51623f, 13.38532f); // centroid
 
         DataStream<String> trafficNotificationStream =
             trafficEventStream
