@@ -1,10 +1,8 @@
-package de.tu_berlin.dos.arm.iot_traffic_experiment.processor;
+package de.tu_berlin.dos.arm.iot_vehicles_experiment.processor;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Cluster.Builder;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.Point;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.utils.FileReader;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.Point;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.utils.FileReader;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicData;
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -20,7 +18,6 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
-import org.apache.flink.streaming.connectors.cassandra.ClusterBuilder;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer.Semantic;

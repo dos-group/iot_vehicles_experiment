@@ -1,4 +1,4 @@
-package de.tu_berlin.dos.arm.iot_traffic_experiment.common.events;
+package de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

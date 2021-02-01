@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>iot_traffic_experiment</artifactId>
+    <artifactId>iot_vehicles_experiment</artifactId>
     <groupId>de.tu_berlin.dos.arm</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>de.tu_berlin.dos.arm.iot_traffic_experiment</groupId>
+  <groupId>de.tu_berlin.dos.arm.iot_vehicles_experiment</groupId>
   <artifactId>processor</artifactId>
   <build>
     <resources>
@@ -47,7 +47,7 @@
                   <resource>reference.conf</resource>
                 </transformer>
                 <transformer>
-                  <mainClass>de.tu_berlin.dos.arm.iot_traffic_experiment.processor.Run</mainClass>
+                  <mainClass>de.tu_berlin.dos.arm.iot_vehicles_experiment.processor.Run</mainClass>
                 </transformer>
               </transformers>
             </configuration>

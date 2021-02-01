@@ -1,6 +1,6 @@
-package de.tu_berlin.dos.arm.iot_traffic_experiment.processor;
+package de.tu_berlin.dos.arm.iot_vehicles_experiment.processor;
 
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.TrafficEvent;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 

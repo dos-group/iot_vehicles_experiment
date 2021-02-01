@@ -1,11 +1,11 @@
-package de.tu_berlin.dos.arm.iot_traffic_experiment.producer;
+package de.tu_berlin.dos.arm.iot_vehicles_experiment.producer;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.Status.Failure;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.Point;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.Point;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.TrafficEvent;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicData;
 import org.apache.kafka.clients.producer.KafkaProducer;

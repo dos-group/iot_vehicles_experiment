@@ -1,11 +1,11 @@
-package de.tu_berlin.dos.arm.iot_traffic_experiment.producer;
+package de.tu_berlin.dos.arm.iot_vehicles_experiment.producer;
 
 import akka.actor.ActorRef;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.data.TimeSeries;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.Point;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.producer.Vehicles.VehicleActor;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.producer.Vehicles.VehicleActor.Emit;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.data.TimeSeries;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.Point;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.producer.Vehicles.VehicleActor;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.producer.Vehicles.VehicleActor.Emit;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.log4j.Logger;

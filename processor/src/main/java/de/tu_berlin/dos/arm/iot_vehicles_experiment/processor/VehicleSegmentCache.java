@@ -1,4 +1,4 @@
-package de.tu_berlin.dos.arm.iot_traffic_experiment.processor;
+package de.tu_berlin.dos.arm.iot_vehicles_experiment.processor;
 
 import org.apache.log4j.Logger;
 

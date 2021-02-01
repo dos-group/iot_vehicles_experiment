@@ -1,8 +1,8 @@
-package de.tu_berlin.dos.arm.iot_traffic_experiment.processor;
+package de.tu_berlin.dos.arm.iot_vehicles_experiment.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import de.tu_berlin.dos.arm.iot_traffic_experiment.common.events.TrafficEvent;
+import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.TrafficEvent;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
