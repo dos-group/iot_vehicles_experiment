@@ -142,9 +142,9 @@ public class Run {
     public static void main(String[] args) throws Exception {
 
         // ensure checkpoint interval is supplied as an argument
-        if (args.length != 1) {
-            throw new IllegalStateException("Required Command line argument: {jobName: '?', brokerList:'?', consumerTopic: '?', producerTopic: '?', partitions: ?, checkpointInterval: ?}");
-        }
+        //if (args.length != 1) {
+            //throw new IllegalStateException("Required Command line argument: {jobName: '?', brokerList:'?', consumerTopic: '?', producerTopic: '?', partitions: ?, checkpointInterval: ?}");
+        //}
         JsonObject jsonObject = JsonParser.parseString(args[0]).getAsJsonObject();
         String jobName = jsonObject.get("jobName").getAsString();
         String brokerList = jsonObject.get("brokerList").getAsString();
