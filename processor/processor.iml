@@ -70,6 +70,7 @@
     <orderEntry type="library" name="Maven: com.data-artisans:frocksdbjni:5.17.2-artisans-2.0" level="project" />
     <orderEntry type="library" name="Maven: net.sf.geographiclib:GeographicLib-Java:1.49" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.9.9" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.25" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20190722" level="project" />

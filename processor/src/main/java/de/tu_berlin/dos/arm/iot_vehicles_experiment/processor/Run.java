@@ -1,5 +1,7 @@
 package de.tu_berlin.dos.arm.iot_vehicles_experiment.processor;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.Point;
 import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.TrafficEvent;
 import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.utils.FileReader;
@@ -28,6 +30,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 
 import java.util.Properties;
+import java.util.UUID;
 
 public class Run {
 
@@ -140,9 +143,15 @@ public class Run {
 
         // ensure checkpoint interval is supplied as an argument
         if (args.length != 1) {
-            throw new IllegalStateException("Required Command line argument: [CHECKPOINT_INTERVAL]");
+            throw new IllegalStateException("Required Command line argument: {jobName: '?', brokerList:'?', consumerTopic: '?', producerTopic: '?', partitions: ?, checkpointInterval: ?}");
         }
-        int interval = Integer.parseInt(args[0]);
+        JsonObject jsonObject = JsonParser.parseString(args[0]).getAsJsonObject();
+        String jobName = jsonObject.get("jobName").getAsString();
+        String brokerList = jsonObject.get("brokerList").getAsString();
+        String consumerTopic = jsonObject.get("consumerTopic").getAsString();
+        String producerTopic = jsonObject.get("producerTopic").getAsString();
+        int partitions = jsonObject.get("partitions").getAsInt();
+        int checkpointInterval = jsonObject.get("checkpointInterval").getAsInt();
 
         // retrieve properties from file
         Properties props = FileReader.GET.read("processor.properties", Properties.class);
@@ -153,28 +162,28 @@ public class Run {
         // setup Kafka consumer
         Properties kafkaConsumerProps = new Properties();
 
-        kafkaConsumerProps.setProperty("bootstrap.servers", props.getProperty("kafka.brokers")); // Broker default host:port
-        kafkaConsumerProps.setProperty("group.id", props.getProperty("kafka.consumer.group"));   // Consumer group ID
-        kafkaConsumerProps.setProperty("auto.offset.reset", "earliest");                           // Always read topic from start
+        kafkaConsumerProps.setProperty("bootstrap.servers", brokerList);            // Broker default host:port
+        kafkaConsumerProps.setProperty("group.id", UUID.randomUUID().toString());   // Consumer group ID
+        kafkaConsumerProps.setProperty("auto.offset.reset", "latest");              // Always read topic from end
 
         FlinkKafkaConsumer<TrafficEvent> myConsumer =
             new FlinkKafkaConsumer<>(
-                props.getProperty("kafka.consumer.topic"),
+                consumerTopic,
                 new TrafficEventSchema(),
                 kafkaConsumerProps);
 
         // setup Kafka producer
         Properties kafkaProducerProps = new Properties();
-        kafkaProducerProps.setProperty("bootstrap.servers", props.getProperty("kafka.brokers")); // Broker default host:port
+        kafkaProducerProps.setProperty("bootstrap.servers", brokerList); // Broker default host:port
         kafkaProducerProps.setProperty(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG,"900000");
         kafkaProducerProps.setProperty(ProducerConfig.TRANSACTIONAL_ID_CONFIG,"my-transaction");
         kafkaProducerProps.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
 
         FlinkKafkaProducer<String> myProducer =
             new FlinkKafkaProducer<>(
-                props.getProperty("kafka.producer.topic"),
+                producerTopic,
                 (KafkaSerializationSchema<String>) (notification, aLong) -> {
-                    return new ProducerRecord<>(props.getProperty("kafka.producer.topic"), notification.getBytes());
+                    return new ProducerRecord<>(producerTopic, notification.getBytes());
                 },
                 kafkaProducerProps,
                 Semantic.EXACTLY_ONCE);
@@ -193,7 +202,7 @@ public class Run {
         env.setStateBackend(backend);
 
         // start a checkpoint based on supplied interval
-        env.enableCheckpointing(interval);
+        env.enableCheckpointing(checkpointInterval);
 
         // set mode to exactly-once (this is the default)
         env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
@@ -229,7 +238,7 @@ public class Run {
         DataStream<TrafficEvent> trafficEventStream =
             env.addSource(myConsumer)
                 .name("KafkaSource")
-                .setParallelism(Integer.parseInt(props.getProperty("kafka.partitions")));
+                .setParallelism(partitions);
 
         // Point of interest
         Point point = new Point(52.51623f, 13.38532f); // centroid
@@ -253,6 +262,6 @@ public class Run {
             .addSink(myProducer)
             .name("KafkaSink");
 
-        env.execute("Traffic");
+        env.execute(jobName);
     }
 }
