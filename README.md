@@ -7,6 +7,13 @@ Experiments require Zookeeper, Kafka, HDFS, and Flink.
 
 ## Configuration
 
+### UPDATE
+For config of kafka, the job now reqires a json string to be passed ot the command line, e.g.: 
+
+{jobName: 'vehicles', brokerList:'130.149.249.40:32690,130.149.249.40:32691,130.149.249.40:32692', consumerTopic: 'iot-vehicles-events', producerTopic: 'iot-vehicles-notifications', partitions: 8, checkpointInterval:30000}
+
+---
+
 Configurations need to be specified for both the producer and processor.
 
 Producer: producer/src/main/resources/producer.properties
