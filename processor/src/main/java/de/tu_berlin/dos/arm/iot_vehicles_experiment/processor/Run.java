@@ -142,16 +142,23 @@ public class Run {
     public static void main(String[] args) throws Exception {
 
         // ensure checkpoint interval is supplied as an argument
-        //if (args.length != 1) {
-            //throw new IllegalStateException("Required Command line argument: {jobName: '?', brokerList:'?', consumerTopic: '?', producerTopic: '?', partitions: ?, checkpointInterval: ?}");
-        //}
-        JsonObject jsonObject = JsonParser.parseString(args[0]).getAsJsonObject();
+        if (args.length != 6) {
+            throw new IllegalStateException("Required Command line argument: jobName brokerList consumerTopic producerTopic partitions checkpointInterval");
+        }
+        /*JsonObject jsonObject = JsonParser.parseString(args[0]).getAsJsonObject();
         String jobName = jsonObject.get("jobName").getAsString();
         String brokerList = jsonObject.get("brokerList").getAsString();
         String consumerTopic = jsonObject.get("consumerTopic").getAsString();
         String producerTopic = jsonObject.get("producerTopic").getAsString();
         int partitions = jsonObject.get("partitions").getAsInt();
         int checkpointInterval = jsonObject.get("checkpointInterval").getAsInt();
+        JsonObject jsonObject = JsonParser.parseString(args[0]).getAsJsonObject();*/
+        String jobName = args[0];
+        String brokerList = args[1];
+        String consumerTopic = args[2];
+        String producerTopic = args[3];
+        int partitions = Integer.parseInt(args[4]);
+        int checkpointInterval = Integer.parseInt(args[5]);
 
         // retrieve properties from file
         Properties props = FileReader.GET.read("processor.properties", Properties.class);
