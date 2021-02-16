@@ -8,9 +8,11 @@ Experiments require Zookeeper, Kafka, HDFS, and Flink.
 ## Configuration
 
 ### UPDATE
-For config of kafka, the job now reqires a json string to be passed ot the command line, e.g.: 
+For config of kafka, the job now reqires 6 arguments to be passed to the command line, i.e.
 
-{jobName: 'vehicles', brokerList:'130.149.249.40:32690,130.149.249.40:32691,130.149.249.40:32692', consumerTopic: 'iot-vehicles-events', producerTopic: 'iot-vehicles-notifications', partitions: 8, checkpointInterval:30000}
+jobName brokerList consumerTopic producerTopic partitions checkpointInterval, e.g.: 
+
+vehicles 130.149.249.40:32690,130.149.249.40:32691,130.149.249.40:32692 iot-vehicles-events iot-vehicles-notifications 8 30000
 
 ---
 
