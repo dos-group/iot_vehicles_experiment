@@ -12,6 +12,7 @@ import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.runtime.state.StateBackend;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -145,14 +146,6 @@ public class Run {
         if (args.length != 6) {
             throw new IllegalStateException("Required Command line argument: jobName brokerList consumerTopic producerTopic partitions checkpointInterval");
         }
-        /*JsonObject jsonObject = JsonParser.parseString(args[0]).getAsJsonObject();
-        String jobName = jsonObject.get("jobName").getAsString();
-        String brokerList = jsonObject.get("brokerList").getAsString();
-        String consumerTopic = jsonObject.get("consumerTopic").getAsString();
-        String producerTopic = jsonObject.get("producerTopic").getAsString();
-        int partitions = jsonObject.get("partitions").getAsInt();
-        int checkpointInterval = jsonObject.get("checkpointInterval").getAsInt();
-        JsonObject jsonObject = JsonParser.parseString(args[0]).getAsJsonObject();*/
         String jobName = args[0];
         String brokerList = args[1];
         String consumerTopic = args[2];
@@ -204,7 +197,7 @@ public class Run {
         env.disableOperatorChaining();
 
         // configuring RocksDB state backend to use HDFS
-        String backupFolder = props.getProperty("hdfs.backupFolder");
+        String backupFolder = props.getProperty("ceph.backupFolder");
         StateBackend backend = new RocksDBStateBackend(backupFolder, true);
         env.setStateBackend(backend);
 
