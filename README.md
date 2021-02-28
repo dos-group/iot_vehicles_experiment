@@ -10,9 +10,9 @@ Experiments require Zookeeper, Kafka, HDFS, and Flink.
 ### UPDATE
 For config of kafka, the job now reqires 6 arguments to be passed to the command line, i.e.
 
-jobName brokerList consumerTopic producerTopic partitions checkpointInterval, e.g.: 
+jobName brokerList consumerTopic producerTopic partitions checkpointInterval backupFolder, e.g.: 
 
-vehicles 130.149.249.40:32690,130.149.249.40:32691,130.149.249.40:32692 iot-vehicles-events iot-vehicles-notifications 8 30000
+vehicles 130.149.249.40:32690 iot-vehicles-events iot-vehicles-notifications 8 30000 hdfs://130.149.249.25:9000/checkpoints/iot
 
 ---
 
