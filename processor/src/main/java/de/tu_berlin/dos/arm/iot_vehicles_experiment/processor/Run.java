@@ -7,6 +7,7 @@ import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.TrafficEvent;
 import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.utils.FileReader;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicData;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.tuple.Tuple5;
@@ -152,6 +153,7 @@ public class Run {
         String producerTopic = args[3];
         int partitions = Integer.parseInt(args[4]);
         int checkpointInterval = Integer.parseInt(args[5]);
+        //String backupFolder= args[6];
 
         // retrieve properties from file
         Properties props = FileReader.GET.read("processor.properties", Properties.class);
@@ -175,9 +177,9 @@ public class Run {
         // setup Kafka producer
         Properties kafkaProducerProps = new Properties();
         kafkaProducerProps.setProperty("bootstrap.servers", brokerList); // Broker default host:port
-        kafkaProducerProps.setProperty(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG,"900000");
-        kafkaProducerProps.setProperty(ProducerConfig.TRANSACTIONAL_ID_CONFIG,"my-transaction");
-        kafkaProducerProps.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        kafkaProducerProps.setProperty(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, "3600000");
+        kafkaProducerProps.setProperty(ProducerConfig.TRANSACTIONAL_ID_CONFIG, UUID.randomUUID().toString());
+        //kafkaProducerProps.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
 
         FlinkKafkaProducer<String> myProducer =
             new FlinkKafkaProducer<>(
@@ -197,7 +199,8 @@ public class Run {
         env.disableOperatorChaining();
 
         // configuring RocksDB state backend to use HDFS
-        String backupFolder = props.getProperty("ceph.backupFolder");
+        //String backupFolder = props.getProperty("ceph.backupFolder");
+        String backupFolder = props.getProperty("hdfs.backupFolder");
         StateBackend backend = new RocksDBStateBackend(backupFolder, true);
         env.setStateBackend(backend);
 
@@ -260,7 +263,7 @@ public class Run {
         myProducer.setWriteTimestampToKafka(true);
         trafficNotificationStream
             .addSink(myProducer)
-            .name("KafkaSink");
+            .name("KafkaSink-" + RandomStringUtils.random(10, true, true));
 
         env.execute(jobName);
     }
