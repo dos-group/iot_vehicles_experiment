@@ -8,6 +8,8 @@ import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.utils.FileReader;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicData;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.flink.api.common.eventtime.*;
+import org.apache.flink.api.common.eventtime.WatermarkGeneratorSupplier.Context;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.tuple.Tuple5;
@@ -20,6 +22,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.CheckpointConfig.ExternalizedCheckpointCleanup;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
@@ -31,13 +35,14 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 
+import java.time.Duration;
 import java.util.Properties;
 import java.util.UUID;
 
 public class Run {
 
     // traffic events are at most 60 sec out-of-order.
-    private static final int MAX_EVENT_DELAY = 60;
+    //private static final int MAX_EVENT_DELAY = 60;
     private static final Logger LOG = Logger.getLogger(Run.class);
 
     // class to filter traffic events within point of interest
@@ -153,7 +158,6 @@ public class Run {
         String producerTopic = args[3];
         int partitions = Integer.parseInt(args[4]);
         int checkpointInterval = Integer.parseInt(args[5]);
-        //String backupFolder= args[6];
 
         // retrieve properties from file
         Properties props = FileReader.GET.read("processor.properties", Properties.class);
@@ -223,19 +227,15 @@ public class Run {
         // enable externalized checkpoints which are deleted after job cancellation
         env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
 
-        // allow job recovery fallback to checkpoint when there is a more recent savepoint
-        env.getCheckpointConfig().setPreferCheckpointForRecovery(true);
-
-        //env.getCheckpointConfig().setFailOnCheckpointingErrors();
-
         // End configurations ******************************************************************************************
 
         // configure event-time and watermarks
-        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        env.getConfig().setAutoWatermarkInterval(1000L);
+        //env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        //env.getConfig().setAutoWatermarkInterval(1000L);
 
         // assign a timestamp extractor to the consumer
-        myConsumer.assignTimestampsAndWatermarks(new TrafficEventTSExtractor(MAX_EVENT_DELAY));
+        //myConsumer.assignTimestampsAndWatermarks(new TrafficEventTSExtractor(MAX_EVENT_DELAY));
+        myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(5)));
 
         // create direct kafka stream
         DataStream<TrafficEvent> trafficEventStream =
@@ -251,9 +251,9 @@ public class Run {
                 .filter(new POIFilter(point, 1000))
                 .name("POIFilter")
                 .keyBy(TrafficEvent::getLp)
-                .timeWindow(Time.milliseconds(windowSize))
+                .window(TumblingEventTimeWindows.of(Time.seconds(windowSize)))
                 .process(new AvgSpeedWindow(updateInterval))
-                .name("Window")
+                .name("AvgSpeedWindow")
                 .filter(new SpeedingFilter(speedLimit))
                 .name("SpeedFilter")
                 .map(new VehicleEnricher())

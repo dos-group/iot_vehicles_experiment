@@ -26,9 +26,7 @@ public class TrafficEventSchema implements DeserializationSchema<TrafficEvent>, 
             throw new RuntimeException("Invalid record: " + line);
         }
         try {
-            TrafficEvent trafficEvent = MAPPER.readValue(line, TrafficEvent.class);
-            //LOG.info(trafficEvent);
-            return trafficEvent;
+            return MAPPER.readValue(line, TrafficEvent.class);
         }
         catch (IOException ex) {
             LOG.error("Mapping error: " + ex.getMessage());

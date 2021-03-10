@@ -122,13 +122,17 @@ class Vehicles {
                             long wait = event.getTs().getTime() - System.currentTimeMillis();
                             // overdue, so emit event to kafka
                             if (wait <= 0) {
-                                e.kafkaProducer.send(new ProducerRecord<>(e.topic, event));
+                                e.kafkaProducer.send(
+                                    new ProducerRecord<>(
+                                        e.topic, null, event.getTs().getTime(), event.getLp(), event));
                             }
                             // ensure actor stays alive until after all last message has been sent
                             else if (i == events.size() - 1) {
                                 SYSTEM.scheduler()
                                     .scheduleOnce(Duration.ofMillis(wait), () -> {
-                                        e.kafkaProducer.send(new ProducerRecord<>(e.topic, event.getLp(), event));
+                                        e.kafkaProducer.send(
+                                            new ProducerRecord<>(
+                                                e.topic, null, event.getTs().getTime(), event.getLp(), event));
                                         context().stop(self());
                                     }, SYSTEM.dispatcher());
                             }
@@ -136,7 +140,9 @@ class Vehicles {
                             else {
                                 SYSTEM.scheduler()
                                     .scheduleOnce(Duration.ofMillis(wait), () -> {
-                                        e.kafkaProducer.send(new ProducerRecord<>(e.topic, event));
+                                        e.kafkaProducer.send(
+                                            new ProducerRecord<>(
+                                                e.topic, null, event.getTs().getTime(), event.getLp(), event));
                                     }, SYSTEM.dispatcher());
                             }
                         }
