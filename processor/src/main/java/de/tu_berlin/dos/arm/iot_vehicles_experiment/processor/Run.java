@@ -136,13 +136,11 @@ public class Run {
         }
 
         @Override
-        public String map(Tuple5<Long, String, Float, Float, Integer> notification) throws Exception {
+        public String map(Tuple5<Long, String, Float, Float, Integer> value) throws Exception {
 
-            return "{ timestamp: " + notification.f0 +
-                    ", licensePlate: '" + notification.f1 + "'" +
-                    ", latitude: " + notification.f2 +
-                    ", longitude: " + notification.f3 +
-                    ", avgSpeed: " + notification.f4 + "}";
+            return String.format(
+                "{ts: %d, lp: '%s', lat: %f, long: %f, avgSpeed: %d}",
+                value.f0, value.f1, value.f2, value.f3, value.f4);
         }
     }
 
@@ -180,16 +178,20 @@ public class Run {
 
         // setup Kafka producer
         Properties kafkaProducerProps = new Properties();
-        kafkaProducerProps.setProperty("bootstrap.servers", brokerList); // Broker default host:port
+        kafkaProducerProps.setProperty("bootstrap.servers", brokerList);
         kafkaProducerProps.setProperty(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, "3600000");
+        kafkaProducerProps.setProperty(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
         kafkaProducerProps.setProperty(ProducerConfig.TRANSACTIONAL_ID_CONFIG, UUID.randomUUID().toString());
-        //kafkaProducerProps.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        kafkaProducerProps.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        kafkaProducerProps.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1000");
+        kafkaProducerProps.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, "16384");
+        kafkaProducerProps.setProperty(ProducerConfig.BUFFER_MEMORY_CONFIG, "33554432");
 
         FlinkKafkaProducer<String> myProducer =
             new FlinkKafkaProducer<>(
                 producerTopic,
-                (KafkaSerializationSchema<String>) (notification, aLong) -> {
-                    return new ProducerRecord<>(producerTopic, notification.getBytes());
+                (KafkaSerializationSchema<String>) (value, aLong) -> {
+                    return new ProducerRecord<>(producerTopic, value.getBytes());
                 },
                 kafkaProducerProps,
                 Semantic.EXACTLY_ONCE);
@@ -219,6 +221,7 @@ public class Run {
 
         // checkpoints have to complete within two minute, or are discarded
         env.getCheckpointConfig().setCheckpointTimeout(380000);
+        //env.getCheckpointConfig().setTolerableCheckpointFailureNumber();
 
         // no external services which could take some time to respond, therefore 1
         // allow only one checkpoint to be in progress at the same time
@@ -226,6 +229,9 @@ public class Run {
 
         // enable externalized checkpoints which are deleted after job cancellation
         env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
+
+        // enables the experimental unaligned checkpoints
+        //env.getCheckpointConfig().enableUnalignedCheckpoints();
 
         // End configurations ******************************************************************************************
 
@@ -235,7 +241,7 @@ public class Run {
 
         // assign a timestamp extractor to the consumer
         //myConsumer.assignTimestampsAndWatermarks(new TrafficEventTSExtractor(MAX_EVENT_DELAY));
-        myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(5)));
+        myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(20)));
 
         // create direct kafka stream
         DataStream<TrafficEvent> trafficEventStream =
