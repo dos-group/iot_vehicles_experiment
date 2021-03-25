@@ -8,12 +8,14 @@ public class TrafficEvent {
 
     private String lp;
     private Point pt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="UTC")
-    private Date ts;
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="UTC")
+    //private Date ts;
+    private long ts;
 
     public TrafficEvent() { }
 
-    public TrafficEvent(String lp, Point pt, Date ts) {
+    //public TrafficEvent(String lp, Point pt, Date ts) {
+    public TrafficEvent(String lp, Point pt, long ts) {
         this.lp = lp;
         this.pt = pt;
         this.ts = ts;
@@ -27,9 +29,10 @@ public class TrafficEvent {
         this.pt = pt;
     }
 
-    public void setTs(Date ts) {
+    /*public void setTs(Date ts) {
         this.ts = ts;
-    }
+    }*/
+
 
     public String getLp() {
         return lp;
@@ -39,8 +42,16 @@ public class TrafficEvent {
         return pt;
     }
 
-    public Date getTs() {
+    /*public Date getTs() {
         return ts;
+    }*/
+
+    public long getTs() {
+        return ts;
+    }
+
+    public void setTs(long ts) {
+        this.ts = ts;
     }
 
     @Override

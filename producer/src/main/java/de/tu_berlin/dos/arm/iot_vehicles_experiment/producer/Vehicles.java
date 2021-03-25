@@ -11,8 +11,10 @@ import net.sf.geographiclib.GeodesicData;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
+//import org.joda.time.Instant;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,20 +50,24 @@ class Vehicles {
         private final List<Point> waypoints;
 
         static Props props(int updateInterval, List<Point> waypoints) {
+
             return Props.create(VehicleActor.class, updateInterval, waypoints);
         }
 
         static final class Emit {
+
             String topic;
             KafkaProducer<String, TrafficEvent> kafkaProducer;
 
             Emit(String topic, KafkaProducer<String, TrafficEvent> kafkaProducer) {
+
                 this.topic = topic;
                 this.kafkaProducer = kafkaProducer;
             }
         }
 
         public VehicleActor(int updateInterval, List<Point> waypoints) {
+
             this.updateInterval = updateInterval;
             this.waypoints = waypoints;
         }
@@ -80,7 +86,8 @@ class Vehicles {
             // generate static vehicle event values
             String vehicleId = genRandomLP();
             // mark initial timestamp and instantiate list for all vehicle events
-            Date timestamp = new Date();
+            //Date timestamp = new Date();
+            long timestamp = Instant.now().getEpochSecond() * 1000;
             List<TrafficEvent> trafficEvents = new ArrayList<>();
             // loop through waypoints in pairs to process road section
             for (int i = 0; i < this.waypoints.size() - 1; ++i) {
@@ -99,9 +106,11 @@ class Vehicles {
                     // create vehicle event and add to vehicle event list
                     trafficEvents.add(new TrafficEvent(vehicleId, new Point((float) g2.lat2, (float) g2.lon2), timestamp));
                     // increment timestamp by time interval for next event
-                    timestamp = Date.from(timestamp.toInstant().plusMillis(this.updateInterval));
+                    //timestamp = Date.from(timestamp.toInstant().plusMillis(this.updateInterval));
+                    timestamp = timestamp + this.updateInterval;
                     // calculate new distance based on average speed (in meters per second) and update interval (in milliseconds)
                     currDistance += (avgSpeed / 3.6) * (this.updateInterval / 1000f);
+                    //currDistance += (avgSpeed / 3.6) * this.updateInterval;
                 }
             }
             return trafficEvents;
@@ -119,12 +128,13 @@ class Vehicles {
                         for (int i = 0; i < events.size(); ++i) {
                             TrafficEvent event = events.get(i);
                             // determine how long we need to wait to emit this event
-                            long wait = event.getTs().getTime() - System.currentTimeMillis();
+                            long wait = event.getTs() - System.currentTimeMillis();
                             // overdue, so emit event to kafka
                             if (wait <= 0) {
                                 e.kafkaProducer.send(
                                     new ProducerRecord<>(
-                                        e.topic, null, event.getTs().getTime(), event.getLp(), event));
+                                        //e.topic, null, event.getTs().getTime(), event.getLp(), event));
+                                        e.topic, null, event.getTs(), event.getLp(), event));
                             }
                             // ensure actor stays alive until after all last message has been sent
                             else if (i == events.size() - 1) {
@@ -132,7 +142,8 @@ class Vehicles {
                                     .scheduleOnce(Duration.ofMillis(wait), () -> {
                                         e.kafkaProducer.send(
                                             new ProducerRecord<>(
-                                                e.topic, null, event.getTs().getTime(), event.getLp(), event));
+                                                //e.topic, null, event.getTs().getTime(), event.getLp(), event));
+                                                e.topic, null, event.getTs(), event.getLp(), event));
                                         context().stop(self());
                                     }, SYSTEM.dispatcher());
                             }
@@ -142,7 +153,8 @@ class Vehicles {
                                     .scheduleOnce(Duration.ofMillis(wait), () -> {
                                         e.kafkaProducer.send(
                                             new ProducerRecord<>(
-                                                e.topic, null, event.getTs().getTime(), event.getLp(), event));
+                                                //e.topic, null, event.getTs().getTime(), event.getLp(), event));
+                                                e.topic, null, event.getTs(), event.getLp(), event));
                                     }, SYSTEM.dispatcher());
                             }
                         }

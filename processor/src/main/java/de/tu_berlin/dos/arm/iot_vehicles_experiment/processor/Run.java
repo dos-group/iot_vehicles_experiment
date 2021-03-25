@@ -42,7 +42,7 @@ import java.util.UUID;
 public class Run {
 
     // traffic events are at most 60 sec out-of-order.
-    //private static final int MAX_EVENT_DELAY = 60;
+    private static final int MAX_EVENT_DELAY = 60;
     private static final Logger LOG = Logger.getLogger(Run.class);
 
     // class to filter traffic events within point of interest
@@ -236,12 +236,12 @@ public class Run {
         // End configurations ******************************************************************************************
 
         // configure event-time and watermarks
-        //env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        //env.getConfig().setAutoWatermarkInterval(1000L);
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        env.getConfig().setAutoWatermarkInterval(1000L);
 
         // assign a timestamp extractor to the consumer
-        //myConsumer.assignTimestampsAndWatermarks(new TrafficEventTSExtractor(MAX_EVENT_DELAY));
-        myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(20)));
+        myConsumer.assignTimestampsAndWatermarks(new TrafficEventTSExtractor(MAX_EVENT_DELAY));
+        //myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(1)));
 
         // create direct kafka stream
         DataStream<TrafficEvent> trafficEventStream =

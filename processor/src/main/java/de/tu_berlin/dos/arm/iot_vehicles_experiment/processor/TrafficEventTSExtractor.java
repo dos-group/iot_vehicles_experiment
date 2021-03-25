@@ -12,6 +12,8 @@ public class TrafficEventTSExtractor extends BoundedOutOfOrdernessTimestampExtra
 
     @Override
     public long extractTimestamp(TrafficEvent trafficEvent) {
-        return trafficEvent.getTs().toInstant().toEpochMilli();
+
+        // return trafficEvent.getTs().toInstant().toEpochMilli();
+        return trafficEvent.getTs();
     }
 }
