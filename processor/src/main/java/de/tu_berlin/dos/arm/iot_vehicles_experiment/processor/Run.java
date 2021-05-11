@@ -1,5 +1,13 @@
 package de.tu_berlin.dos.arm.iot_vehicles_experiment.processor;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Builder;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.Bucket;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.Point;
@@ -105,8 +113,9 @@ public class Run {
             double time = (count * updateInterval) / 3600000d;
             int avgSpeed = 0;
             if (time != 0) avgSpeed = (int) ((distance/1000) / time);
-            assert previous != null;
-            out.collect(new Tuple5<>(context.window().getEnd(), vehicleId, previous.lt, previous.lg, avgSpeed));
+            if (previous != null) {
+                out.collect(new Tuple5<>(context.window().getEnd(), vehicleId, previous.lt, previous.lg, avgSpeed));
+            }
         }
     }
 
@@ -161,7 +170,6 @@ public class Run {
         Properties props = FileReader.GET.read("processor.properties", Properties.class);
         int updateInterval = Integer.parseInt(props.getProperty("traffic.updateInterval"));
         int speedLimit = Integer.parseInt(props.getProperty("traffic.speedLimit"));
-        int windowSize = Integer.parseInt(props.getProperty("traffic.windowSize"));
 
         // setup Kafka consumer
         Properties kafkaConsumerProps = new Properties();
@@ -186,6 +194,8 @@ public class Run {
         kafkaProducerProps.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1000");
         kafkaProducerProps.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, "16384");
         kafkaProducerProps.setProperty(ProducerConfig.BUFFER_MEMORY_CONFIG, "33554432");
+        kafkaProducerProps.setProperty(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, "30000");
+        kafkaProducerProps.setProperty(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "120000");
 
         FlinkKafkaProducer<String> myProducer =
             new FlinkKafkaProducer<>(
@@ -194,20 +204,31 @@ public class Run {
                     return new ProducerRecord<>(producerTopic, value.getBytes());
                 },
                 kafkaProducerProps,
-                Semantic.EXACTLY_ONCE);
+                Semantic.EXACTLY_ONCE,
+                10);
 
         // Start configurations ****************************************************************************************
 
         // set up streaming execution environment
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setBufferTimeout(-1);
 
         // Disable Operator chaining for fine grain monitoring
         env.disableOperatorChaining();
 
+        /*Properties sysProps = new Properties();
+        sysProps.setProperty("s3.host", "rook-ceph-rgw-checkpoint-store.rook-ceph");
+        sysProps.setProperty("s3.endpoint", "10.233.4.155:80");
+        sysProps.setProperty("s3.access-key", "X2YST2JA3UYHNB5Y9BB1");
+        sysProps.setProperty("s3.secret-key", "X1ZpZoSAfo1B5tPWlvXvA5mRgu8pZ4y8vY8K2VlU");
+        sysProps.setProperty("s3.ssl.enabled", "false");
+        System.setProperties(new Properties());*/
+
         // configuring RocksDB state backend to use HDFS
         //String backupFolder = props.getProperty("ceph.backupFolder");
-        String backupFolder = props.getProperty("hdfs.backupFolder");
-        StateBackend backend = new RocksDBStateBackend(backupFolder, true);
+        //String backupFolder = props.getProperty("hdfs.backupFolder");
+        //"s3p://iot/" + jobName
+        StateBackend backend = new RocksDBStateBackend("hdfs://130.149.249.46:9000/" + jobName, true);
         env.setStateBackend(backend);
 
         // start a checkpoint based on supplied interval
@@ -217,18 +238,19 @@ public class Run {
         env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
 
         // make sure 500 ms of progress happen between checkpoints
-        //env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
+        //env.getCheckpointConfig().setMinPauseBetweenCheckpoints(checkpointInterval);
 
         // checkpoints have to complete within two minute, or are discarded
-        env.getCheckpointConfig().setCheckpointTimeout(380000);
-        //env.getCheckpointConfig().setTolerableCheckpointFailureNumber();
+        env.getCheckpointConfig().setCheckpointTimeout(3600000);
+        env.getCheckpointConfig().setTolerableCheckpointFailureNumber(3);
 
         // no external services which could take some time to respond, therefore 1
         // allow only one checkpoint to be in progress at the same time
-        //env.getCheckpointConfig().setMaxConcurrentCheckpoints(10);
+        env.getCheckpointConfig().setMaxConcurrentCheckpoints(100);
 
         // enable externalized checkpoints which are deleted after job cancellation
         env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
+
 
         // enables the experimental unaligned checkpoints
         //env.getCheckpointConfig().enableUnalignedCheckpoints();
@@ -241,7 +263,7 @@ public class Run {
 
         // assign a timestamp extractor to the consumer
         myConsumer.assignTimestampsAndWatermarks(new TrafficEventTSExtractor(MAX_EVENT_DELAY));
-        //myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(1)));
+        //myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(10000)));
 
         // create direct kafka stream
         DataStream<TrafficEvent> trafficEventStream =
@@ -251,13 +273,12 @@ public class Run {
 
         // Point of interest
         Point point = new Point(52.51623f, 13.38532f); // centroid
-
         DataStream<String> trafficNotificationStream =
             trafficEventStream
                 .filter(new POIFilter(point, 1000))
                 .name("POIFilter")
                 .keyBy(TrafficEvent::getLp)
-                .window(TumblingEventTimeWindows.of(Time.seconds(windowSize)))
+                .window(SlidingEventTimeWindows.of(Time.seconds(5), Time.seconds(1)))
                 .process(new AvgSpeedWindow(updateInterval))
                 .name("AvgSpeedWindow")
                 .filter(new SpeedingFilter(speedLimit))
