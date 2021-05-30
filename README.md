@@ -12,7 +12,7 @@ For config of kafka, the job now reqires 6 arguments to be passed to the command
 
 jobName brokerList consumerTopic producerTopic partitions checkpointInterval, e.g.: 
 
-vehicles kafka-0.kafka-headless.khaos.svc.cluster.local:9093 iot-vehicles-events iot-vehicles-notifications 8 30000
+vehicles 130.149.249.40:9092 iot-vehicles-events iot-vehicles-notifications 4 30000
 
 ---
 
