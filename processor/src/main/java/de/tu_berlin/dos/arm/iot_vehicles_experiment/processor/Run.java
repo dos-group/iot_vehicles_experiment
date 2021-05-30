@@ -226,9 +226,9 @@ public class Run {
 
         // configuring RocksDB state backend to use HDFS
         //String backupFolder = props.getProperty("ceph.backupFolder");
-        //String backupFolder = props.getProperty("hdfs.backupFolder");
+        String backupFolder = props.getProperty("hdfs.backupFolder");
         //"s3p://iot/" + jobName
-        StateBackend backend = new RocksDBStateBackend("hdfs://130.149.249.46:9000/" + jobName, true);
+        StateBackend backend = new RocksDBStateBackend(backupFolder, true);
         env.setStateBackend(backend);
 
         // start a checkpoint based on supplied interval
@@ -246,7 +246,7 @@ public class Run {
 
         // no external services which could take some time to respond, therefore 1
         // allow only one checkpoint to be in progress at the same time
-        env.getCheckpointConfig().setMaxConcurrentCheckpoints(100);
+        env.getCheckpointConfig().setMaxConcurrentCheckpoints(10);
 
         // enable externalized checkpoints which are deleted after job cancellation
         env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
@@ -278,7 +278,7 @@ public class Run {
                 .filter(new POIFilter(point, 1000))
                 .name("POIFilter")
                 .keyBy(TrafficEvent::getLp)
-                .window(SlidingEventTimeWindows.of(Time.seconds(5), Time.seconds(1)))
+                .window(SlidingEventTimeWindows.of(Time.seconds(3), Time.seconds(1)))
                 .process(new AvgSpeedWindow(updateInterval))
                 .name("AvgSpeedWindow")
                 .filter(new SpeedingFilter(speedLimit))

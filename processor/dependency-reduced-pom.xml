@@ -60,13 +60,9 @@
     <dependency>
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-java</artifactId>
-      <version>1.12.1</version>
+      <version>1.13.1</version>
       <scope>provided</scope>
       <exclusions>
-        <exclusion>
-          <artifactId>flink-core</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
         <exclusion>
           <artifactId>commons-math3</artifactId>
           <groupId>org.apache.commons</groupId>
@@ -76,7 +72,7 @@
     <dependency>
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-streaming-scala_2.12</artifactId>
-      <version>1.12.1</version>
+      <version>1.13.1</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -100,7 +96,7 @@
     <dependency>
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-streaming-java_2.12</artifactId>
-      <version>1.12.1</version>
+      <version>1.13.1</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -109,14 +105,6 @@
         </exclusion>
         <exclusion>
           <artifactId>flink-runtime_2.12</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>flink-shaded-guava</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>flink-core</artifactId>
           <groupId>org.apache.flink</groupId>
         </exclusion>
         <exclusion>
