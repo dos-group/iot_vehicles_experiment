@@ -24,42 +24,42 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-java</artifactId>
-            <version>1.13.1</version>
+            <version>1.12.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-scala_2.12</artifactId>
-            <version>1.13.1</version>
+            <version>1.12.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java_2.12</artifactId>
-            <version>1.13.1</version>
+            <version>1.12.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka_2.12</artifactId>
-            <version>1.13.1</version>
+            <version>1.12.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-cassandra_2.12</artifactId>
-            <version>1.13.1</version>
+            <version>1.12.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-statebackend-rocksdb_2.12</artifactId>
-            <version>1.13.1</version>
+            <version>1.12.4</version>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>1.11.991</version>
-        </dependency>
+        </dependency-->
 
         <!-- Geographic dependencies -->
         <dependency>

@@ -15,11 +15,11 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.6.6" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.6.6" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.6" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-java:1.13.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-core:1.13.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-annotations:1.13.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-metrics-core:1.13.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-asm-7:7.1-13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-java:1.12.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-core:1.12.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-annotations:1.12.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-metrics-core:1.12.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-asm-7:7.1-12.0" level="project" />
     <orderEntry type="library" name="Maven: com.esotericsoftware.kryo:kryo:2.24.0" level="project" />
     <orderEntry type="library" name="Maven: com.esotericsoftware.minlog:minlog:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.objenesis:objenesis:2.1" level="project" />
@@ -28,21 +28,21 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.commons:commons-math3:3.5" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.15" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:force-shading:1.13.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-streaming-scala_2.12:1.13.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-scala_2.12:1.13.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:force-shading:1.12.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-streaming-scala_2.12:1.12.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-scala_2.12:1.12.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-reflect:2.12.7" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-library:2.12.7" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-compiler:2.12.7" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang.modules:scala-xml_2.12:1.0.6" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-streaming-java_2.12:1.13.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-file-sink-common:1.13.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-runtime_2.12:1.13.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-queryable-state-client-java:1.13.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-hadoop-fs:1.13.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-shaded-netty:4.1.49.Final-13.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-shaded-jackson:2.12.1-13.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-shaded-zookeeper-3:3.4.14-13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-streaming-java_2.12:1.12.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-file-sink-common:1.12.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-runtime_2.12:1.12.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-queryable-state-client-java:1.12.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-hadoop-fs:1.12.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-shaded-netty:4.1.49.Final-12.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-shaded-jackson:2.10.1-12.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-shaded-zookeeper-3:3.4.14-12.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: commons-cli:commons-cli:1.3.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.javassist:javassist:3.24.0-GA" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.akka:akka-actor_2.12:2.5.21" level="project" />
@@ -60,25 +60,15 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.twitter:chill_2.12:0.7.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.twitter:chill-java:0.7.6" level="project" />
     <orderEntry type="library" name="Maven: org.lz4:lz4-java:1.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-guava:18.0-13.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-kafka_2.12:1.13.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-guava:18.0-12.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-kafka_2.12:1.12.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.kafka:kafka-clients:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.luben:zstd-jni:1.4.3-1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-base:1.13.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-cassandra_2.12:1.13.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-base:1.12.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-cassandra_2.12:1.12.4" level="project" />
     <orderEntry type="library" name="Maven: io.dropwizard.metrics:metrics-core:3.1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-statebackend-rocksdb_2.12:1.13.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-statebackend-rocksdb_2.12:1.12.4" level="project" />
     <orderEntry type="library" name="Maven: com.data-artisans:frocksdbjni:5.17.2-artisans-2.0" level="project" />
-    <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-s3:1.11.991" level="project" />
-    <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-kms:1.11.991" level="project" />
-    <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-core:1.11.991" level="project" />
-    <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.1.3" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.13" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.13" level="project" />
-    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.11" level="project" />
-    <orderEntry type="library" name="Maven: software.amazon.ion:ion-java:1.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.6.7" level="project" />
-    <orderEntry type="library" name="Maven: com.amazonaws:jmespath-java:1.11.991" level="project" />
     <orderEntry type="library" name="Maven: net.sf.geographiclib:GeographicLib-Java:1.49" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />

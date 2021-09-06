@@ -27,12 +27,18 @@ public enum Generator { GET;
         // import and generate street graph from file
         RoutesGraph.GET.importFromResource(graphFileName);
         // start stopwatch
-        Generator.GET.stopWatch.start();
+        //Generator.GET.stopWatch.start();
         // loop through dataset based on synchronization with stopwatch
-        int current = (int) Generator.GET.stopWatch.getTime(TimeUnit.SECONDS);
+        //int current = (int) Generator.GET.stopWatch.getTime(TimeUnit.SECONDS);
         System.out.println(ts.observations.size());
 
-        for (int i = 0; i < ts.observations.size(); i++) {
+        // start at 86400
+        for (int i = 86400; i < ts.observations.size(); i++) {
+
+            Generator.GET.stopWatch.reset();
+            Generator.GET.stopWatch.start();
+            // get current time
+            long current = Generator.GET.stopWatch.getTime(TimeUnit.MILLISECONDS);
 
             // test if new vehicles need to be created
             int vehiclesNeeded = ts.observations.get(i).value - VehicleActor.VEHICLE_COUNT.get();
@@ -46,9 +52,11 @@ public enum Generator { GET;
                 });
             }
             // wait until next second
-            while (current < i) {
+            while (current < 1000) {
+            //while (current < i) {
 
-                current = (int) Generator.GET.stopWatch.getTime(TimeUnit.SECONDS);
+                //current = (int) Generator.GET.stopWatch.getTime(TimeUnit.SECONDS);
+                current = Generator.GET.stopWatch.getTime(TimeUnit.MILLISECONDS);
             }
             LOG.info("Vehicle Limit: " + VehicleActor.VEHICLE_COUNT.get());
         }

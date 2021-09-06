@@ -1,13 +1,13 @@
 package de.tu_berlin.dos.arm.iot_vehicles_experiment.processor;
 
-import com.amazonaws.ClientConfiguration;
+/*import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Builder;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.Bucket;*/
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.tu_berlin.dos.arm.iot_vehicles_experiment.common.events.Point;
@@ -258,12 +258,12 @@ public class Run {
         // End configurations ******************************************************************************************
 
         // configure event-time and watermarks
-        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        env.getConfig().setAutoWatermarkInterval(1000L);
+        //env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        //env.getConfig().setAutoWatermarkInterval(1000L);
 
         // assign a timestamp extractor to the consumer
-        myConsumer.assignTimestampsAndWatermarks(new TrafficEventTSExtractor(MAX_EVENT_DELAY));
-        //myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(10000)));
+        //myConsumer.assignTimestampsAndWatermarks(new TrafficEventTSExtractor(MAX_EVENT_DELAY));
+        myConsumer.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(1)));
 
         // create direct kafka stream
         DataStream<TrafficEvent> trafficEventStream =
@@ -277,20 +277,25 @@ public class Run {
             trafficEventStream
                 .filter(new POIFilter(point, 1000))
                 .name("POIFilter")
+                .uid("poi-filter-id")
                 .keyBy(TrafficEvent::getLp)
-                .window(SlidingEventTimeWindows.of(Time.seconds(3), Time.seconds(1)))
+                .window(SlidingEventTimeWindows.of(Time.seconds(5), Time.seconds(1)))
                 .process(new AvgSpeedWindow(updateInterval))
                 .name("AvgSpeedWindow")
+                .uid("window-id")
                 .filter(new SpeedingFilter(speedLimit))
                 .name("SpeedFilter")
+                .uid("speed-filter-id")
                 .map(new VehicleEnricher())
-                .name("VehicleEnricher");//.startNewChain();
+                .name("VehicleEnricher")//.startNewChain();
+                .uid("enricher-id");
 
         // write notifications to kafka
         myProducer.setWriteTimestampToKafka(true);
         trafficNotificationStream
             .addSink(myProducer)
-            .name("KafkaSink-" + RandomStringUtils.random(10, true, true));
+            .name("KafkaSink-" + RandomStringUtils.random(10, true, true))
+            .uid("sink-id");
 
         env.execute(jobName);
     }
